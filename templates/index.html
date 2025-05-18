@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerCraft AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="navbar">
+<div class="logo">
+  <!-- <img src="../assets/images/Career.jpg" alt="CareerCraft AI" class="h-10"> -->
+   <img src="{{ url_for('static', filename='images/Career.png') }}" alt="CareerCraft Logo">
+
+
+  <span class="text-xl font-bold">Career<span class="text-purple-600">Craft</span> AI</span>
+
+</div> 
+   <nav>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('Resume') }}">Resume Builder</a></li>
+        <li><a href="{{ url_for('Analyse') }}">Resume Analyzer</a></li>
+        <li><a href=" http://127.0.0.1:7860">Career Test</a></li>
+      </ul>
+    </nav>
+    <div class="auth-buttons">
+    <div class="nav-buttons">
+    {% if user %}
+        <div class="profile-icon">{{ user[0]|upper }}</div>
+    {% else %}
+        <a href="{{ url_for('login') }}" class="btn login">Login</a>
+        <a href="{{ url_for('register') }}" class="btn register">Register</a>
+    {% endif %}
+</div>
+    </div>
+
+  </header>
+
+  <section class="hero animated-hero">
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="badge fade-in">AI-Powered Career Development</div>
+      <h1 class="slide-up">Craft Your <span class="highlight">Perfect Career</span> Journey</h1>
+      <p class="fade-in delay-1s">
+        An intelligent system that helps students and freshers build ATS-optimized resumes,
+        analyze career options, and get personalized recommendations.
+      </p>
+      <div class="buttons fade-in delay-2s">
+        <a href="Resume" class="btn primary">Build Your Resume</a>
+        <a href="http://127.0.0.1:7860" class="btn outline">Take Career Test</a>
+      </div>
+    </div>
+
+    <div class="hero-image fade-in delay-1s">
+      <img src="https://i.pinimg.com/originals/1b/11/4a/1b114a9d890b5edf13e1fa9692f513a8.gif" alt="Career Development" />
+    </div>
+  </div>
+</section>
+
+  <section class="steps-section">
+  <div class="steps-container">
+    <h2>Ready to <span class="highlight">Transform</span> Your Career Journey?</h2>
+    <p class="subtitle">
+      Join thousands of students who have accelerated their career<br />
+      with our AI-powered tools.
+    </p>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-icon">1</div>
+        <h3>Create Your Profile</h3>
+        <p>Enter your details, skills, and experiences</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">2</div>
+        <h3>Use Our Tools</h3>
+        <p>Build resumes, take the career test, get insights</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">3</div>
+        <h3>Launch Your Career</h3>
+        <p>Apply with confidence using our recommendations</p>
+      </div>
+    </div>
+
+    <a href="#" class="cta-btn">Start Building Your Future →</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col brand">
+      <h2><span class="logo-icon">C</span> <span class="logo-text">Career<span class="highlight">Craft AI</span></span></h2>
+      <p>Empowering students and freshers to kickstart their career journey with AI-powered tools.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Features</h4>
+      <ul>
+        <li><a href="#">Resume Builder</a></li>
+        <li><a href="#">Resume Analyzer</a></li>
+        <li><a href="#">Career Test (CAT)</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Career Blog</a></li>
+        <li><a href="#">Interview Tips</a></li>
+        <li><a href="#">Learning Resources</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 CareerCraft AI. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script>
+    // Check for saved language preference on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('googtrans')) {
+            restoreTranslation();
+        }
+    });
+</script>
+
+    <style>
+        .auth-bg {
+            background: linear-gradient(135deg, white 0%, #fffef5 100%);
+        }
+        .btn-primary {
+            background-color: #b442f5;
+        }
+        .btn-primary:hover {
+            background-color: #b442f5;
+        }
+        .text-primary {
+            color: #b442f5;
+        }
+        .hover\:text-primary:hover {
+            color: #b442f5;
+        }
+        .border-primary {
+            border-color: #b442f5;
+        }
+        .bg-primary-100 {
+            background-color: #e8f5e9;
+        }
+        .text-primary-600 {
+            color: #b442f5;
+        }
+        .bg-danger-100 {
+            background-color: #ffebee;
+        }
+        .text-danger-600 {
+            color: #b442f5;
+        }
+        
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .profile-button:hover {
+            background-color: #f0f0f0;
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #b442f5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9rem;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #b442f5;
+        }
+        .show {
+            display: block;
+        }
+        
+        /* CareerCraft AI Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .logo span {
+            color: #b442f5;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            color: #b442f5;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .btn.login {
+            color: #b442f5;
+            border: 1px solid #b442f5;
+        }
+        .btn.register {
+            background-color: #b442f5;
+            color: white;
+        }
+        .profile-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: #b442f5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            display: flex;
+            padding: 4rem 2rem;
+            align-items: center;
+            gap: 2rem;
+        }
+        .hero-text {
+            flex: 1;
+        }
+        .hero-image {
+            flex: 1;
+        }
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 1rem;
+        }
+        .badge {
+            background-color: #e8f5e9;
+            color: #b442f5;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .highlight {
+            color: #b442f5;
+        }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .btn.primary {
+            background-color: #b442f5;
+            color: white;
+        }
+        .btn.outline {
+            border: 1px solid #b442f5;
+            color: #b442f5;
+        }
+        
+        /* Steps Section */
+        .steps-section {
+            padding: 4rem 2rem;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        .step-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+        .step-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: #b442f5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+        .cta-btn {
+            display: inline-block;
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background-color: #b442f5;
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #f8f9fa;
+            padding: 3rem 2rem;
+        }
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        .footer-col h4 {
+            margin-bottom: 1rem;
+            color: #b442f5;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col li {
+            margin-bottom: 0.5rem;
+        }
+        .footer-col a {
+            text-decoration: none;
+            color: #555;
+        }
+        .footer-col a:hover {
+            color: #b442f5;
+        }
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Auth Container (Login/Register) -->
+    <div id="authContainer" class="min-h-screen flex items-center justify-center auth-bg p-4">
+        <!-- Login Form -->
+        <div id="loginForm" class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">CareerCraft AI</h1>
+                <p class="text-gray-600 mt-2">Sign in to your account</p>
+            </div>
+            
+            <form id="loginFormSubmit" class="space-y-5">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="loginEmail" name="email" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="loginPassword" name="password" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="rememberMe" name="remember" type="checkbox"
+                               class="h-4 w-4 text-primary-600 focus:ring-primary border-gray-300 rounded">
+                        <label for="rememberMe" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                    </div>
+                    <a href="#" class="text-sm text-primary hover:text-primary">Forgot password?</a>
+                </div>
+                
+                <div>
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary btn-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account?
+                    <button id="showRegisterBtn" class="font-medium text-primary hover:text-primary">Sign up</button>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Register Form (Hidden by default) -->
+        <div id="registerForm" class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md hidden">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Create Account</h1>
+                <p class="text-gray-600 mt-2">Join our CareerCraft AI community</p>
+            </div>
+            
+            <form id="registerFormSubmit" class="space-y-5">
+                <div>
+                    <label for="registerName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <input type="text" id="registerName" name="name" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="John Doe">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="registerEmail" name="email" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-phone text-gray-400"></i>
+                        </div>
+                        <input type="tel" id="phone" name="phone" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="+91 98765 43210">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="registerPassword" name="password" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="registerConfirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="registerConfirmPassword" name="confirmPassword" required
+                               class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary border-primary"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="termsAgreement" name="terms" type="checkbox" required
+                           class="h-4 w-4 text-primary-600 focus:ring-primary border-gray-300 rounded">
+                    <label for="termsAgreement" class="ml-2 block text-sm text-gray-700">
+                        I agree to the <a href="#" class="text-primary hover:text-primary">Terms of Service</a> and <a href="#" class="text-primary hover:text-primary">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <div>
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary btn-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have an account?
+                    <button id="showLoginBtn" class="font-medium text-primary hover:text-primary">Sign in</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Container (Hidden by default) -->
+    <div id="dashboardContainer" class="min-h-screen hidden">
+        <!-- Navigation Bar -->
+        <header class="navbar">
+            <div class="logo">Career<span>Craft AI</span></div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Resume Builder</a></li>
+                    <li><a href="#">Resume Analyzer</a></li>
+                    <li><a href="#">Career Test</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+            <div class="profile-dropdown">
+                <button class="profile-button" id="profileBtn">
+                    <div class="profile-avatar" id="userAvatarNav">U</div>
+                    <span id="userNameNav">User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-content" id="dropdownMenu">
+                    <a href="#"><i class="fas fa-user mr-2"></i> Profile</a>
+                    <a href="#"><i class="fas fa-cog mr-2"></i> Settings</a>
+                    <a href="#" id="logoutBtnNav"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <section class="hero">
+            <div class="hero-text">
+                <div class="badge">AI-Powered Career Development</div>
+                <h1>Craft Your <span class="highlight">Perfect Career</span> Journey</h1>
+                <p>
+                    An intelligent system that helps students and freshers build ATS-optimized resumes, analyze career options, and get personalized recommendations.
+                </p>
+                <div class="buttons">
+                    <a href="#" class="btn primary">Build Your Resume</a>
+                    <a href="#" class="btn outline">Take Career Test</a>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <img src="https://i.pinimg.com/474x/95/f6/1a/95f61aa81d1ed270bf18547ea36923cc.jpg" alt="Code" />
+            </div>
+        </section>
+
+        <section class="steps-section">
+            <div class="steps-container">
+                <h2>Ready to <span class="highlight">Transform</span> Your Career Journey?</h2>
+                <p class="subtitle">
+                    Join thousands of students who have accelerated their career<br />
+                    with our AI-powered tools.
+                </p>
+
+                <div class="steps">
+                    <div class="step-card">
+                        <div class="step-icon">1</div>
+                        <h3>Create Your Profile</h3>
+                        <p>Enter your details, skills, and experiences</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-icon">2</div>
+                        <h3>Use Our Tools</h3>
+                        <p>Build resumes, take the career test, get insights</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-icon">3</div>
+                        <h3>Launch Your Career</h3>
+                        <p>Apply with confidence using our recommendations</p>
+                    </div>
+                </div>
+
+                <a href="#" class="cta-btn">Start Building Your Future →</a>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-col brand">
+                    <h2><span class="logo-icon">C</span> <span class="logo-text">Career<span class="highlight">Craft AI</span></span></h2>
+                    <p>Empowering students and freshers to kickstart their career journey with AI-powered tools.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><a href="#">Resume Builder</a></li>
+                        <li><a href="#">Resume Analyzer</a></li>
+                        <li><a href="#">Career Test (CAT)</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Career Blog</a></li>
+                        <li><a href="#">Interview Tips</a></li>
+                        <li><a href="#">Learning Resources</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2025 CareerCraft AI. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const authContainer = document.getElementById('authContainer');
+            const dashboardContainer = document.getElementById('dashboardContainer');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const showRegisterBtn = document.getElementById('showRegisterBtn');
+            const showLoginBtn = document.getElementById('showLoginBtn');
+            const loginFormSubmit = document.getElementById('loginFormSubmit');
+            const registerFormSubmit = document.getElementById('registerFormSubmit');
+            const logoutBtnNav = document.getElementById('logoutBtnNav');
+            const userNameNav = document.getElementById('userNameNav');
+            const userAvatarNav = document.getElementById('userAvatarNav');
+            const profileBtn = document.getElementById('profileBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            // Current user
+            let currentUser = null;
+            
+            // API Base URL (replace with your backend URL)
+            const API_BASE_URL = 'http://localhost:3000/api';
+            
+            // Toggle between login and register forms
+            showRegisterBtn.addEventListener('click', function() {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            });
+            
+            showLoginBtn.addEventListener('click', function() {
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+            
+            // Register form submission
+            registerFormSubmit.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const phone = document.getElementById('phone').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                // Simple validation
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match!');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name,
+                            email,
+                            password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        alert('Registration successful! Please login with your credentials.');
+                        registerForm.classList.add('hidden');
+                        loginForm.classList.remove('hidden');
+                        registerFormSubmit.reset();
+                    } else {
+                        alert(data.message || 'Registration failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    alert('An error occurred during registration. Please try again.');
+                }
+            });
+            
+            // Login form submission
+            loginFormSubmit.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email,
+                            password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        currentUser = data.user;
+                        
+                        // Store token in localStorage (for session persistence)
+                        localStorage.setItem('careerCraftToken', data.token);
+                        
+                        // Update UI with user data
+                        userNameNav.textContent = currentUser.name;
+                        userAvatarNav.textContent = currentUser.name.charAt(0).toUpperCase();
+                        
+                        // Show dashboard
+                        authContainer.classList.add('hidden');
+                        dashboardContainer.classList.remove('hidden');
+                        
+                        // Reset form
+                        loginFormSubmit.reset();
+                    } else {
+                        alert(data.message || 'Login failed. Please check your credentials.');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('An error occurred during login. Please try again.');
+                }
+            });
+            
+            // Logout
+            function handleLogout() {
+                // Clear token from localStorage
+                localStorage.removeItem('careerCraftToken');
+                
+                currentUser = null;
+                dashboardContainer.classList.add('hidden');
+                authContainer.classList.remove('hidden');
+            }
+            
+            logoutBtnNav.addEventListener('click', handleLogout);
+            
+            // Toggle profile dropdown
+            profileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+            
+            // Check if user is already logged in (has token)
+            function checkAuthStatus() {
+                const token = localStorage.getItem('careerCraftToken');
+                if (token) {
+                    // Verify token with backend
+                    fetch(`${API_BASE_URL}/auth/verify`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.valid) {
+                            currentUser = data.user;
+                            
+                            // Update UI with user data
+                            userNameNav.textContent = currentUser.name;
+                            userAvatarNav.textContent = currentUser.name.charAt(0).toUpperCase();
+                            
+                            // Show dashboard
+                            authContainer.classList.add('hidden');
+                            dashboardContainer.classList.remove('hidden');
+                        } else {
+                            localStorage.removeItem('careerCraftToken');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Token verification error:', error);
+                        localStorage.removeItem('careerCraftToken');
+                    });
+                }
+            }
+            
+            // Check auth status on page load
+            checkAuthStatus();
+        });
+    </script>
+</body>
+</html>

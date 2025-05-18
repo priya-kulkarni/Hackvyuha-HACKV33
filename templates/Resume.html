@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Friendly Resume Builder - CareerCraft AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Navbar Styles */
+        /* Resume Builder Styles */
+        .resume-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .resume-preview {
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            background-color: white;
+            min-height: 800px;
+        }
+        .ats-tip {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .keyword-badge {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .download-buttons {
+            display: none; /* Initially hidden */
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <header class="navbar">
+<div class="logo">
+  <!-- <img src="../assets/images/Career.jpg" alt="CareerCraft AI" class="h-10"> -->
+   <img src="{{ url_for('static', filename='images/Career.png') }}" alt="CareerCraft Logo">
+  <span class="text-xl font-bold">Career<span class="text-purple-600">Craft</span> AI</span>
+
+</div>         <nav>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="Resume.html">Resume Builder</a></li>
+                <li><a href="Analyzer.html">Resume Analyzer</a></li>
+                <li><a href="#">Career Test</a></li>
+            </ul>
+        </nav>
+        <a href="#" class="btn get-started">Get Started</a>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">ATS Friendly Resume Builder</h1>
+            <p class="text-gray-600 mt-2">Create resumes optimized for Applicant Tracking Systems</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Form -->
+            <div class="lg:col-span-2">
+                <div class="resume-section">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="(123) 456-7890">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile URL</label>
+                            <input type="url" id="linkedin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://linkedin.com/in/yourprofile">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Professional Summary</h2>
+                    <div class="ats-tip">
+                        <p class="text-sm text-gray-700"><strong>ATS Tip:</strong> Include 3-5 key skills and years of experience in your summary.</p>
+                    </div>
+                    <textarea id="summary" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Recent graduate with experience in..."></textarea>
+                </div>
+
+                <div class="resume-section">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Skills</h2>
+                    <div class="ats-tip">
+                        <p class="text-sm text-gray-700"><strong>ATS Tip:</strong> Include both technical and soft skills relevant to the job.</p>
+                        <div class="mt-2">
+                            <span class="keyword-badge">JavaScript</span>
+                            <span class="keyword-badge">Python</span>
+                            <span class="keyword-badge">Project Management</span>
+                            <span class="keyword-badge">Team Leadership</span>
+                        </div>
+                    </div>
+                    <textarea id="skills" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="JavaScript, Python, Project Management, Team Leadership"></textarea>
+                </div>
+
+                <div class="resume-section">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Work Experience</h2>
+                    <div class="ats-tip">
+                        <p class="text-sm text-gray-700"><strong>ATS Tip:</strong> Use action verbs and quantify achievements (e.g., "Increased sales by 30%").</p>
+                    </div>
+                    <div id="experience-container">
+                        <div class="experience-entry mb-4 p-4 border border-gray-200 rounded-md">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                    <input type="text" class="experience-job-title w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Software Engineer">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                    <input type="text" class="experience-company w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tech Company Inc.">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="text" class="experience-start-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="text" class="experience-end-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY or Present">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea class="experience-description w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Developed features for web application using..."></textarea>
+                            </div>
+                            <div class="text-right mt-2">
+                                <button class="remove-experience text-sm text-red-600 hover:text-red-800">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="add-experience" class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ Add Another Experience</button>
+                </div>
+
+                <div class="resume-section">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Education</h2>
+                    <div id="education-container">
+                        <div class="education-entry mb-4 p-4 border border-gray-200 rounded-md">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                                    <input type="text" class="education-degree w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Bachelor of Science in Computer Science">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                                    <input type="text" class="education-institution w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="University of Technology">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="text" class="education-start-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="text" class="education-end-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY or Present">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Achievements</label>
+                                <textarea class="education-achievements w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Dean's List, 3.8 GPA"></textarea>
+                            </div>
+                            <div class="text-right mt-2">
+                                <button class="remove-education text-sm text-red-600 hover:text-red-800">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="add-education" class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ Add Another Education</button>
+                </div>
+
+                <div class="flex justify-center mt-6">
+                    <button id="generate-resume" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium text-lg">Generate Resume</button>
+                </div>
+
+                <!-- Download Buttons (initially hidden) -->
+                <div id="download-buttons" class="download-buttons flex justify-center gap-4">
+                    <button id="download-pdf" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium">
+                        <i class="fas fa-file-pdf mr-2"></i>Download PDF
+                    </button>
+                    <button id="download-docx" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium">
+                        <i class="fas fa-file-word mr-2"></i>Download DOCX
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Resume Preview -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-4">
+                    <div class="resume-section">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Resume Preview</h2>
+                        <div class="resume-preview" id="resume-preview">
+                            <h1 class="text-2xl font-bold text-center mb-2" id="preview-name">Your Name</h1>
+                            <p class="text-center text-gray-600 mb-4" id="preview-contact">
+                                Email: your@email.com | Phone: (123) 456-7890 | LinkedIn: linkedin.com/in/yourprofile
+                            </p>
+                            <hr class="my-4 border-gray-300">
+
+                            <h2 class="text-lg font-bold mt-4 mb-2 border-b border-gray-300 pb-1">Professional Summary</h2>
+                            <p id="preview-summary">Enter your professional summary above.</p>
+
+                            <h2 class="text-lg font-bold mt-4 mb-2 border-b border-gray-300 pb-1">Skills</h2>
+                            <ul class="list-disc pl-5" id="preview-skills">
+                                <li>Skills will appear here</li>
+                            </ul>
+
+                            <h2 class="text-lg font-bold mt-4 mb-2 border-b border-gray-300 pb-1">Work Experience</h2>
+                            <div id="preview-experience">
+                                <p>Your work experience will appear here.</p>
+                            </div>
+
+                            <h2 class="text-lg font-bold mt-4 mb-2 border-b border-gray-300 pb-1">Education</h2>
+                            <div id="preview-education">
+                                <p>Your education details will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resume-section mt-4">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">ATS Optimization Tips</h2>
+                        <div class="ats-tip">
+                            <p class="font-medium text-gray-800">Keyword Matching</p>
+                            <p class="text-sm text-gray-700 mt-1">Include keywords from the job description in your resume.</p>
+                        </div>
+                        <div class="ats-tip">
+                            <p class="font-medium text-gray-800">Clear Section Headings</p>
+                            <p class="text-sm text-gray-700 mt-1">Use standard headings like "Work Experience" and "Education".</p>
+                        </div>
+                        <div class="ats-tip">
+                            <p class="font-medium text-gray-800">Quantifiable Achievements</p>
+                            <p class="text-sm text-gray-700 mt-1">Use numbers to show impact (e.g., "Increased sales by 30%").</p>
+                        </div>
+                        <div class="ats-tip">
+                            <p class="font-medium text-gray-800">Simple Formatting</p>
+                            <p class="text-sm text-gray-700 mt-1">Avoid tables, columns, and graphics that may confuse ATS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            
+            // Add experience entry
+            document.getElementById('add-experience').addEventListener('click', function() {
+                const container = document.getElementById('experience-container');
+                const newEntry = document.createElement('div');
+                newEntry.className = 'experience-entry mb-4 p-4 border border-gray-200 rounded-md';
+                newEntry.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                            <input type="text" class="experience-job-title w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Software Engineer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                            <input type="text" class="experience-company w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tech Company Inc.">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                            <input type="text" class="experience-start-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                            <input type="text" class="experience-end-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY or Present">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea class="experience-description w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Developed features for web application using..."></textarea>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="remove-experience text-sm text-red-600 hover:text-red-800">Remove</button>
+                    </div>
+                `;
+                container.appendChild(newEntry);
+                
+                // Add event listener to the new remove button
+                newEntry.querySelector('.remove-experience').addEventListener('click', function() {
+                    container.removeChild(newEntry);
+                    updatePreview();
+                });
+                
+                // Add event listeners to update preview when inputs change
+                const inputs = newEntry.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('input', updatePreview);
+                });
+            });
+            
+            // Add education entry
+            document.getElementById('add-education').addEventListener('click', function() {
+                const container = document.getElementById('education-container');
+                const newEntry = document.createElement('div');
+                newEntry.className = 'education-entry mb-4 p-4 border border-gray-200 rounded-md';
+                newEntry.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                            <input type="text" class="education-degree w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Bachelor of Science in Computer Science">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                            <input type="text" class="education-institution w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="University of Technology">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                            <input type="text" class="education-start-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                            <input type="text" class="education-end-date w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YYYY or Present">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Achievements</label>
+                        <textarea class="education-achievements w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Dean's List, 3.8 GPA"></textarea>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button class="remove-education text-sm text-red-600 hover:text-red-800">Remove</button>
+                    </div>
+                `;
+                container.appendChild(newEntry);
+                
+                // Add event listener to the new remove button
+                newEntry.querySelector('.remove-education').addEventListener('click', function() {
+                    container.removeChild(newEntry);
+                    updatePreview();
+                });
+                
+                // Add event listeners to update preview when inputs change
+                const inputs = newEntry.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('input', updatePreview);
+                });
+            });
+            
+            // Add event listeners to all existing remove buttons
+            document.querySelectorAll('.remove-experience').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.experience-entry').remove();
+                    updatePreview();
+                });
+            });
+            
+            document.querySelectorAll('.remove-education').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.education-entry').remove();
+                    updatePreview();
+                });
+            });
+            
+            // Add event listeners to all inputs for live preview
+            document.querySelectorAll('#name, #email, #phone, #linkedin, #summary, #skills').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+            
+            // Add event listeners to all experience and education inputs
+            document.querySelectorAll('.experience-job-title, .experience-company, .experience-start-date, .experience-end-date, .experience-description, .education-degree, .education-institution, .education-start-date, .education-end-date, .education-achievements').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+            
+            // Generate resume button
+            document.getElementById('generate-resume').addEventListener('click', function() {
+                // Show download buttons
+                document.getElementById('download-buttons').style.display = 'flex';
+                
+                // Scroll to download buttons
+                document.getElementById('download-buttons').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Download PDF button
+            document.getElementById('download-pdf').addEventListener('click', generatePDF);
+            
+            // Download DOCX button
+            document.getElementById('download-docx').addEventListener('click', generateDOCX);
+            
+            // Initial preview update
+            updatePreview();
+            
+            // Function to update the preview
+            function updatePreview() {
+                // Update personal info
+                document.getElementById('preview-name').textContent = document.getElementById('name').value || 'Your Name';
+                
+                const email = document.getElementById('email').value || 'your@email.com';
+                const phone = document.getElementById('phone').value || '(123) 456-7890';
+                const linkedin = document.getElementById('linkedin').value || 'linkedin.com/in/yourprofile';
+                document.getElementById('preview-contact').textContent = `Email: ${email} | Phone: ${phone} | LinkedIn: ${linkedin}`;
+                
+                // Update summary
+                document.getElementById('preview-summary').textContent = document.getElementById('summary').value || 'Enter your professional summary above.';
+                
+                // Update skills
+                const skillsList = document.getElementById('preview-skills');
+                skillsList.innerHTML = '';
+                const skills = document.getElementById('skills').value;
+                if (skills) {
+                    skills.split(',').forEach(skill => {
+                        if (skill.trim()) {
+                            const li = document.createElement('li');
+                            li.textContent = skill.trim();
+                            skillsList.appendChild(li);
+                        }
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'Skills will appear here';
+                    skillsList.appendChild(li);
+                }
+                
+                // Update experience
+                const experiencePreview = document.getElementById('preview-experience');
+                experiencePreview.innerHTML = '';
+                
+                const experienceEntries = document.querySelectorAll('.experience-entry');
+                if (experienceEntries.length > 0) {
+                    experienceEntries.forEach(entry => {
+                        const jobTitle = entry.querySelector('.experience-job-title').value;
+                        const company = entry.querySelector('.experience-company').value;
+                        const startDate = entry.querySelector('.experience-start-date').value;
+                        const endDate = entry.querySelector('.experience-end-date').value;
+                        const description = entry.querySelector('.experience-description').value;
+                        
+                        if (jobTitle || company || startDate || endDate || description) {
+                            const div = document.createElement('div');
+                            div.className = 'mb-4';
+                            
+                            const titleDiv = document.createElement('div');
+                            titleDiv.className = 'flex justify-between';
+                            
+                            const title = document.createElement('h3');
+                            title.className = 'font-bold';
+                            title.textContent = jobTitle ? `${jobTitle}${company ? ` at ${company}` : ''}` : company || 'Position';
+                            
+                            const dates = document.createElement('span');
+                            dates.className = 'text-gray-600';
+                            dates.textContent = startDate || endDate ? `${startDate || ''} - ${endDate || ''}` : '';
+                            
+                            titleDiv.appendChild(title);
+                            titleDiv.appendChild(dates);
+                            div.appendChild(titleDiv);
+                            
+                            if (description) {
+                                const desc = document.createElement('p');
+                                desc.className = 'mt-1 whitespace-pre-line';
+                                desc.textContent = description;
+                                div.appendChild(desc);
+                            }
+                            
+                            experiencePreview.appendChild(div);
+                        }
+                    });
+                } else {
+                    const p = document.createElement('p');
+                    p.textContent = 'Your work experience will appear here.';
+                    experiencePreview.appendChild(p);
+                }
+                
+                // Update education
+                const educationPreview = document.getElementById('preview-education');
+                educationPreview.innerHTML = '';
+                
+                const educationEntries = document.querySelectorAll('.education-entry');
+                if (educationEntries.length > 0) {
+                    educationEntries.forEach(entry => {
+                        const degree = entry.querySelector('.education-degree').value;
+                        const institution = entry.querySelector('.education-institution').value;
+                        const startDate = entry.querySelector('.education-start-date').value;
+                        const endDate = entry.querySelector('.education-end-date').value;
+                        const achievements = entry.querySelector('.education-achievements').value;
+                        
+                        if (degree || institution || startDate || endDate || achievements) {
+                            const div = document.createElement('div');
+                            div.className = 'mb-4';
+                            
+                            const titleDiv = document.createElement('div');
+                            titleDiv.className = 'flex justify-between';
+                            
+                            const title = document.createElement('h3');
+                            title.className = 'font-bold';
+                            title.textContent = degree ? `${degree}${institution ? `, ${institution}` : ''}` : institution || 'Education';
+                            
+                            const dates = document.createElement('span');
+                            dates.className = 'text-gray-600';
+                            dates.textContent = startDate || endDate ? `${startDate || ''} - ${endDate || ''}` : '';
+                            
+                            titleDiv.appendChild(title);
+                            titleDiv.appendChild(dates);
+                            div.appendChild(titleDiv);
+                            
+                            if (achievements) {
+                                const ach = document.createElement('p');
+                                ach.className = 'mt-1 whitespace-pre-line';
+                                ach.textContent = achievements;
+                                div.appendChild(ach);
+                            }
+                            
+                            educationPreview.appendChild(div);
+                        }
+                    });
+                } else {
+                    const p = document.createElement('p');
+                    p.textContent = 'Your education details will appear here.';
+                    educationPreview.appendChild(p);
+                }
+            }
+            
+            // Function to generate PDF
+            function generatePDF() {
+                const previewElement = document.getElementById('resume-preview');
+                
+                // Use html2canvas to capture the preview
+                html2canvas(previewElement, {
+                    scale: 2, // Higher quality
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Create PDF
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 210; // A4 width in mm
+                    const pageHeight = 295; // A4 height in mm
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    
+                    // Add new pages if content is longer than one page
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    
+                    // Save the PDF
+                    pdf.save('ATS_Resume.pdf');
+                });
+            }
+            
+            // Function to generate DOCX
+            function generateDOCX() {
+                const { docx } = window;
+                
+                // Create document
+                const doc = new docx.Document();
+                
+                // Add name as title
+                const name = document.getElementById('name').value || 'Your Name';
+                doc.addSection({
+                    children: [
+                        new docx.Paragraph({
+                            text: name,
+                            heading: docx.HeadingLevel.TITLE,
+                            alignment: docx.AlignmentType.CENTER,
+                            spacing: { after: 200 }
+                        })
+                    ]
+                });
+                
+                // Add contact info
+                const email = document.getElementById('email').value || '';
+                const phone = document.getElementById('phone').value || '';
+                const linkedin = document.getElementById('linkedin').value || '';
+                
+                let contactInfo = [];
+                if (email) contactInfo.push(`Email: ${email}`);
+                if (phone) contactInfo.push(`Phone: ${phone}`);
+                if (linkedin) contactInfo.push(`LinkedIn: ${linkedin}`);
+                
+                if (contactInfo.length > 0) {
+                    doc.addSection({
+                        children: [
+                            new docx.Paragraph({
+                                text: contactInfo.join(' | '),
+                                alignment: docx.AlignmentType.CENTER,
+                                spacing: { after: 200 }
+                            })
+                        ]
+                    });
+                }
+                
+                // Add professional summary
+                const summary = document.getElementById('summary').value;
+                if (summary) {
+                    doc.addSection({
+                        children: [
+                            new docx.Paragraph({
+                                text: "Professional Summary",
+                                heading: docx.HeadingLevel.HEADING_1,
+                                spacing: { after: 100 }
+                            }),
+                            new docx.Paragraph({
+                                text: summary,
+                                spacing: { after: 200 }
+                            })
+                        ]
+                    });
+                }
+                
+                // Add skills
+                const skills = document.getElementById('skills').value;
+                if (skills) {
+                    const skillList = skills.split(',').filter(skill => skill.trim());
+                    if (skillList.length > 0) {
+                        doc.addSection({
+                            children: [
+                                new docx.Paragraph({
+                                    text: "Skills",
+                                    heading: docx.HeadingLevel.HEADING_1,
+                                    spacing: { after: 100 }
+                                }),
+                                new docx.Paragraph({
+                                    children: skillList.map(skill => 
+                                        new docx.TextRun({
+                                            text: `• ${skill.trim()}`,
+                                            break: 1
+                                        })
+                                    ),
+                                    spacing: { after: 200 }
+                                })
+                            ]
+                        });
+                    }
+                }
+                
+                // Add work experience
+                const experienceEntries = document.querySelectorAll('.experience-entry');
+                if (experienceEntries.length > 0) {
+                    doc.addSection({
+                        children: [
+                            new docx.Paragraph({
+                                text: "Work Experience",
+                                heading: docx.HeadingLevel.HEADING_1,
+                                spacing: { after: 100 }
+                            })
+                        ]
+                    });
+                    
+                    experienceEntries.forEach(entry => {
+                        const jobTitle = entry.querySelector('.experience-job-title').value;
+                        const company = entry.querySelector('.experience-company').value;
+                        const startDate = entry.querySelector('.experience-start-date').value;
+                        const endDate = entry.querySelector('.experience-end-date').value;
+                        const description = entry.querySelector('.experience-description').value;
+                        
+                        if (jobTitle || company || description) {
+                            const positionText = [];
+                            if (jobTitle) positionText.push(jobTitle);
+                            if (company) positionText.push(`at ${company}`);
+                            
+                            const dateText = [];
+                            if (startDate) dateText.push(startDate);
+                            if (endDate) dateText.push(endDate);
+                            
+                            const children = [];
+                            
+                            if (positionText.length > 0 || dateText.length > 0) {
+                                children.push(
+                                    new docx.Paragraph({
+                                        text: positionText.join(' '),
+                                        bullet: { level: 0 }
+                                    })
+                                );
+                                
+                                if (dateText.length > 0) {
+                                    children.push(
+                                        new docx.Paragraph({
+                                            text: dateText.join(' - '),
+                                            indent: { left: 720 }, // 0.5 inch indent
+                                            spacing: { after: 100 }
+                                        })
+                                    );
+                                }
+                            }
+                            
+                            if (description) {
+                                children.push(
+                                    new docx.Paragraph({
+                                        text: description,
+                                        indent: { left: 720 }, // 0.5 inch indent
+                                        spacing: { after: 200 }
+                                    })
+                                );
+                            }
+                            
+                            doc.addSection({
+                                children: children
+                            });
+                        }
+                    });
+                }
+                
+                // Add education
+                const educationEntries = document.querySelectorAll('.education-entry');
+                if (educationEntries.length > 0) {
+                    doc.addSection({
+                        children: [
+                            new docx.Paragraph({
+                                text: "Education",
+                                heading: docx.HeadingLevel.HEADING_1,
+                                spacing: { after: 100 }
+                            })
+                        ]
+                    });
+                    
+                    educationEntries.forEach(entry => {
+                        const degree = entry.querySelector('.education-degree').value;
+                        const institution = entry.querySelector('.education-institution').value;
+                        const startDate = entry.querySelector('.education-start-date').value;
+                        const endDate = entry.querySelector('.education-end-date').value;
+                        const achievements = entry.querySelector('.education-achievements').value;
+                        
+                        if (degree || institution || achievements) {
+                            const educationText = [];
+                            if (degree) educationText.push(degree);
+                            if (institution) educationText.push(`at ${institution}`);
+                            
+                            const dateText = [];
+                            if (startDate) dateText.push(startDate);
+                            if (endDate) dateText.push(endDate);
+                            
+                            const children = [];
+                            
+                            if (educationText.length > 0 || dateText.length > 0) {
+                                children.push(
+                                    new docx.Paragraph({
+                                        text: educationText.join(' '),
+                                        bullet: { level: 0 }
+                                    })
+                                );
+                                
+                                if (dateText.length > 0) {
+                                    children.push(
+                                        new docx.Paragraph({
+                                            text: dateText.join(' - '),
+                                            indent: { left: 720 }, // 0.5 inch indent
+                                            spacing: { after: 100 }
+                                        })
+                                    );
+                                }
+                            }
+                            
+                            if (achievements) {
+                                children.push(
+                                    new docx.Paragraph({
+                                        text: achievements,
+                                        indent: { left: 720 }, // 0.5 inch indent
+                                        spacing: { after: 200 }
+                                    })
+                                );
+                            }
+                            
+                            doc.addSection({
+                                children: children
+                            });
+                        }
+                    });
+                }
+                
+                // Generate and download the document
+                docx.Packer.toBlob(doc).then(blob => {
+                    saveAs(blob, "ATS_Resume.docx");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
